@@ -1,9 +1,11 @@
-import React, { useContext, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, {  useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import cn from 'classnames';
 import { login } from '../services/loginService';
 import { useLocalStorage } from '../utils/useLocalStorage';
+import { useAppDispatch } from "../app/hooks";
+import { actions } from "../features/PeopleSlice";
 
 function validateUserName(value: string) {
   if (!value) {
@@ -24,6 +26,7 @@ function validatePassword(value: string) {
 export const LoginPage = () => {
   const navigate = useNavigate();
   const [, setUser] = useLocalStorage<string>('user', '');
+  const dispatch = useAppDispatch();
 
   const [error, setError] = useState('');
 
@@ -39,7 +42,8 @@ export const LoginPage = () => {
           return login({ username, password })
             .then((res) => {
               navigate('/');
-              setUser(res)
+              setUser(res);
+              dispatch(actions.setActivatedUser(res));
             })
             .catch(error => {
               setError(error.message);

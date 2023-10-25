@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
-import { Routes, Route, Link, useNavigate, NavLink } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 
 import { LoginPage } from "./pages/LoginPage";
 import { PeoplePage } from "./pages/PeoplePage";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { actions } from "./features/PeopleSlice";
+
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./styles.scss";
@@ -11,15 +14,18 @@ import { useLocalStorage } from "./utils/useLocalStorage";
 
 function App() {
   const navigate = useNavigate();
-  const [user, setUser] = useLocalStorage<string>("user", "");
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.people.activatedUser);
+  const [, setUser] = useLocalStorage<string>('user', '');
 
   useEffect(() => {
+    console.log("User value:", user);
     if (!user) {
       navigate('/login')
     } else {
       navigate('/')
     }
-  }, [user]);
+  }, [navigate, user]);
 
   return (
     <>
@@ -31,11 +37,14 @@ function App() {
         <div className="navbar-end">
           <div className="navbar-item">
             <div className="buttons">
-              {!!user ? (
-                
+              {user ? (
                 <button
                   className="button is-light has-text-weight-bold"
-                  onClick={() => {setUser('')}}
+                  onClick={() => {
+                    dispatch(actions.setActivatedUser(''))
+                    navigate('/login');
+                    setUser('');
+                  }}
                 >
                   Log out
                 </button>
@@ -45,7 +54,7 @@ function App() {
                     to="/login"
                     className="button is-success has-text-weight-bold"
                   >
-                    Log in
+                    {!user ? 'Log in' : 'LogOut'}
                   </Link>
                 </>
               )}

@@ -14,6 +14,7 @@ type PeopleState = {
   limit: number,
   offset: number,
   currentPage: number,
+  activatedUser: string,
 };
 
 const initialState: PeopleState = {
@@ -24,6 +25,7 @@ const initialState: PeopleState = {
   limit: 10,
   offset: 0,
   currentPage: 1,
+  activatedUser: localStorage.getItem('user') || '',
 };
 
 const peopleSlice = createSlice({
@@ -68,6 +70,9 @@ const peopleSlice = createSlice({
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
+    },
+    setActivatedUser: (state, action: PayloadAction<string>) => {
+      state.activatedUser = action.payload;
     },
   },
   extraReducers: (builder) => {
